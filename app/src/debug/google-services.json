@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "383185290729",
+    "firebase_url": "https://plachat-9a2af.firebaseio.com",
+    "project_id": "plachat-9a2af",
+    "storage_bucket": "plachat-9a2af.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383185290729:android:08f0e56819559d32",
+        "android_client_info": {
+          "package_name": "com.example.root.proto2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383185290729-k5jorcdb9iskfb5k3q8mls4osffv3eqm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.root.proto2",
+            "certificate_hash": "10db0ffe73ce12f2a9aa4b838bb416f005f4f089"
+          }
+        },
+        {
+          "client_id": "383185290729-mmd8jpohj9d3ns1kiqsf4jfc19oap9oe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeWNIElpVFzqSrwZhTtXqRsT4eXyg74IQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383185290729-mmd8jpohj9d3ns1kiqsf4jfc19oap9oe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

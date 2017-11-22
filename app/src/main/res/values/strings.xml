@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">proto2</string>
+
+    <!-- Strings related to login -->
+    <string name="app_login">Sign In</string>
+    <string name="prompt_phome">Mobile No.</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_googlesign_in">Sign in with Google</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="add_user">Add User</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <!-- Strings related to Navactivity -->
+    <string name="title_activity_nav">Dashboard</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="nav_header_username">Sanket Bansal</string>
+    <string name="nav_header_email">Sanketbansal57@gmail.com</string>
+
+    <string name="nav_header_comp1">Complaint</string>
+    <string name="nav_header_comp2">Analysis</string>
+    <string name="nav_header_comp3">Sign out</string>
+    <string name="nav_header_comp4">Profile</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Strings related to Addactivity -->
+    <string name="title_activity_add">Add Complaint</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+
+    <!-- Strings related to Scrollactivity -->
+    <string name="title_activity_scroll">Complaints</string>
+
+
+    <!-- Strings related to Analysisactivity -->
+    <string name="title_activity_analysis">Analysis</string>
+    <string name="title_activity_location">LocationActivity</string>
+    <string name="title_activity_maps">Map</string>
+
+
+    <!-- Strings related to Splashscreenactivity -->
+    <string name="title_activity_splahscreen">Grieveance</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">Sanpro</string>
+
+    <!-- Strings related to Profileactivity -->
+    <string name="title_activity_profile"></string>
+
+
+</resources>

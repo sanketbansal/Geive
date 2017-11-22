@@ -13,5 +13,5 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:keepScreenOn="true"
-        android:background="@drawable/firebaseauthentication"/>
+        android:background="@mipmap/ic_launcher_foreground"/>
 </FrameLayout>

@@ -94,17 +94,6 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
     private GoogleSignInAccount acct;
 
     private Cachedocument cache;
-
-    private Intent serviceintent;
-
-    private Messenger ipcMessenger;
-
-    private Message msg;
-
-    private ServiceConnection ipcConnection;
-
-    private boolean ipcBound;
-
     private int servicelock;
 
     @Override
@@ -117,6 +106,7 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
         util=new Apputil();
         util.googleInit(LoginActivity.this);
         util.firebaseInit();
+        util.ipc_util(this);
 
         fs=new AppFireStore();
 
@@ -124,29 +114,6 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
 
         cache=new Cachedocument();
         cache.ctx=getApplicationContext();
-
-        serviceintent=new Intent(getBaseContext(),Appservice.class);
-
-        ipcConnection=new ServiceConnection(){
-            public void onServiceConnected(ComponentName className, IBinder service) {
-                // This is called when the connection with the service has been
-                // established, giving us the object we can use to
-                // interact with the service.  We are communicating with the
-                // service using a Messenger, so here we get a client-side
-                // representation of that from the raw IBinder object.
-                ipcMessenger = new Messenger(service);
-                ipcBound = true;
-            }
-
-            public void onServiceDisconnected(ComponentName className) {
-                // This is called when the connection with the service has been
-                // unexpectedly disconnected -- that is, its process crashed.
-                ipcMessenger = null;
-                ipcBound = false;
-            }
-        };
-
-
 
         Button mGoogleSignInButton = (Button) findViewById(R.id.googlesignin);
         mGoogleSignInButton.setOnClickListener(new OnClickListener() {
@@ -168,6 +135,16 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
                 Log.d("Googlesignin","New sign in");
             }
         });
+
+        Button signin =(Button) findViewById(R.id.signin);
+        signin.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(navintent);
+                finish();
+                Toast.makeText(LoginActivity.this,"Sign in button clicked",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
@@ -180,7 +157,7 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
     protected void onStop() {
         super.onStop();
         if(servicelock==1) {
-            unbindService(ipcConnection);
+            unbindService(util.ipcConnection);
             servicelock=0;
         }
     }
@@ -193,7 +170,6 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
         Log.d("LoginConnection failed", "onConnectionFailed:" + connectionResult);
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -205,7 +181,6 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
-
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d("Googlesignin", "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -214,16 +189,16 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
 
             dataModel.setUserid(acct.getEmail());
             dataModel.setUsername(acct.getDisplayName());
-            dataModel.setComplaint(cache.readDoc("dummy").getComplaint());
-            dataModel.setTimeline(cache.readDoc("dummy").getTimeline());
+            //dataModel.setComplaint(cache.readDoc("dummy").getComplaint());
+            //dataModel.setTimeline(cache.readDoc("dummy").getTimeline());
             cache.ctx=getApplicationContext();
             cache.writeDoc(dataModel,"session");
 
-            serviceintent.putExtra("docid",acct.getEmail());
-            serviceintent.putExtra("datamodel",dataModel);
-            serviceintent.putExtra("fieldid","");
-            serviceintent.putExtra("updatemodel",dataModel);
-            bindService(serviceintent,ipcConnection,Context.BIND_AUTO_CREATE);
+            util.serviceintent.putExtra("docid",acct.getEmail());
+            util.serviceintent.putExtra("datamodel",dataModel);
+            util.serviceintent.putExtra("fieldid","");
+            util.serviceintent.putExtra("updatemodel",dataModel);
+            bindService(util.serviceintent,util.ipcConnection,Context.BIND_AUTO_CREATE);
             servicelock=1;
 
             fs.cRef.whereEqualTo("userid",acct.getEmail())
@@ -240,11 +215,10 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
                                 } else {
                                     fs.docs = null;
                                 }
-
                                 if (fs.docs == null){
-                                    msg=Message.obtain(null,1,0,0);
+                                    util.msg=Message.obtain(null,1,0,0);
                                     try {
-                                        ipcMessenger.send(msg);
+                                        util.ipcMessenger.send(util.msg);
                                     }catch(Exception e){
                                         Log.i("appservice",e.toString());
                                     }
@@ -253,20 +227,22 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
                                     }
                                     Intent profileintent = new Intent(LoginActivity.this, ProfileActivity.class);
                                     startActivity(profileintent);
+                                    finish();
                                 }
                                 else {
                                     Log.d("Googlesignin", acct.getEmail());
                                     fs.readDoc(acct.getEmail(),getApplicationContext());
                                     startActivity(navintent);
+                                    finish();
                                 }
                             }
                             else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
+                                Toast.makeText(LoginActivity.this,"Server error",Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
         }
-
         else {
             Log.d("Googlesignin", "Sign in failed");
             Toast.makeText(this, "Sign in failed" + "\n" + "Check Your Connection\n" + "Try Again!", Toast.LENGTH_SHORT).show();

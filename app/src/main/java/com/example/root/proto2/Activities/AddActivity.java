@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -53,6 +54,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import static com.example.root.proto2.Activities.ProfileActivity.REQUEST_IMAGE_CAPTURE;
 
@@ -98,8 +105,7 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
         cache.ctx=getApplicationContext();
         dm=cache.readDoc("session");
         Log.i("Addactivity",dm.userid);
-
-
+        dm=cache.readDoc(dm.userid);
 
         mGoogleLocationClient=new GoogleApiClient.Builder(this)
                 .addOnConnectionFailedListener(this)
@@ -236,9 +242,8 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
             comp.setCity(address.getAdminArea());
             Log.i("Addactivity",comp.getCity());
 
-            dm.getComplaint().add(0,comp);
+            dm.getComplaint().set(0, comp);
             dm.setComplaint(dm.getComplaint());
-
             cache.writeDoc(dm,dm.userid);
 
             util.serviceintent.putExtra("docid",dm.userid);

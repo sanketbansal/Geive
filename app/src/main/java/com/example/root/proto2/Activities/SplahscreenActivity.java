@@ -34,6 +34,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.taplytics.sdk.Taplytics;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class SplahscreenActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
     private static final boolean AUTO_HIDE = true;
@@ -88,57 +91,58 @@ public class SplahscreenActivity extends AppCompatActivity implements GoogleApiC
     private AppFireStore fs=new AppFireStore();
     private Cachedocument cache=new Cachedocument();
 
+    private OptionalPendingResult<GoogleSignInResult> opr;
+
+    private Thread del;
+
+    private static final int delay  = 4000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Taplytics.startTaplytics(this, "e2f8b7a91063c9296ab6e3b1698c16319c96d1bd");
-
         setContentView(R.layout.activity_splahscreen);
-
+        Taplytics.startTaplytics(this, "e2f8b7a91063c9296ab6e3b1698c16319c96d1bd");
         DummyData dummy =new DummyData();
-
         cache.ctx=getApplicationContext();
         cache.writeDoc(dummy.setdata(),"dummy");
-
-
         mVisible = true;
         //mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
-
         navintent=new Intent(SplahscreenActivity.this, NavActivity.class);
         loginintent=new Intent(SplahscreenActivity.this, LoginActivity.class);
-
-        location=new AppLocation(this);
-
+        location=new AppLocation(SplahscreenActivity.this);
         util=new Apputil();
         util.googleInit(SplahscreenActivity.this);
         //util.LocationInit(SplahscreenActivity.this);
 
-        mGoogleLocationClient=new GoogleApiClient.Builder(this)
-                .addOnConnectionFailedListener(this)
-                .addConnectionCallbacks(this)
+        mGoogleLocationClient=new GoogleApiClient.Builder(SplahscreenActivity.this)
+                .addOnConnectionFailedListener(SplahscreenActivity.this)
+                .addConnectionCallbacks(SplahscreenActivity.this)
                 .addApi(LocationServices.API)
                 .build();
-
         if(!mGoogleLocationClient.isConnected()){
-            Toast.makeText(this,"client not connected",Toast.LENGTH_SHORT).show();
+            Toast.makeText(SplahscreenActivity.this,"client not connected",Toast.LENGTH_SHORT).show();
             mGoogleLocationClient.connect();
         }
-
         location.mGoogleLocationClient=mGoogleLocationClient;
+        opr = Auth.GoogleSignInApi.silentSignIn(util.mGoogleApiClient);
     }
 
     @Override
-    protected   void onStart(){super.onStart();
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(util.mGoogleApiClient);
+    protected   void onStart(){
+        super.onStart();
         if (opr.isDone()) {
             Log.d("Googlesignin", "Got cached sign-in");
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
-        } else {
-            startActivity(loginintent);
-            finish();
+        }
+        else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(loginintent);
+                    finish();
+                }
+            }, delay);
         }
     }
 
@@ -171,18 +175,23 @@ public class SplahscreenActivity extends AppCompatActivity implements GoogleApiC
             Log.d("Googlesignin", "Sign in successful");
             GoogleSignInAccount acct = result.getSignInAccount();
             Log.d("Googlesignin", acct.getEmail());
-            finish();
             Intent serviceintent=new Intent(SplahscreenActivity.this, Appservice.class);
             serviceintent.putExtra("docid",acct.getEmail());
             startService(serviceintent);
             startActivity(navintent);
+            finish();
         } else {
             // Signed out, show unauthenticated UI.
             Toast.makeText(this,"Something went wrong\nTry sign in again",Toast.LENGTH_SHORT).show();
             cache.ctx=getApplicationContext();
             cache.writeDoc(null,"session");
-            startActivity(loginintent);
-            finish();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(loginintent);
+                    finish();
+                }
+            },delay);
         }
     }
 
@@ -203,7 +212,6 @@ public class SplahscreenActivity extends AppCompatActivity implements GoogleApiC
             show();
         }
     }
-
 
 
     private void hide() {

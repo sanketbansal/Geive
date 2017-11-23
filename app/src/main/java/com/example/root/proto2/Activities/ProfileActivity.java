@@ -198,7 +198,6 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     }
 
 
-
     private void verifynumber(){
 
         EditText phonenumber=(EditText) findViewById(R.id.phone);
@@ -210,7 +209,6 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
                         //signInWithPhoneAuthCredential(credential);
                         verify.setText("Verified");
                         OTPdialog.hide();
-
                     }
 
                     @Override
@@ -253,16 +251,18 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
                     }
                 };
 
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phonenumber.getText().toString(),
-                60,
-                TimeUnit.SECONDS,
-                ProfileActivity.this,
-                callback);
+        if(phonenumber.getText()!=null) {
+            PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                    phonenumber.getText().toString(),
+                    60,
+                    TimeUnit.SECONDS,
+                    ProfileActivity.this,
+                    callback);
+        }
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        util.mAuth.signInWithCredential(credential)
+        mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

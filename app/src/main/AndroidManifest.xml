@@ -67,7 +67,7 @@
             android:name=".Activities.SplahscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_splahscreen"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@style/AddTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

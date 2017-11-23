@@ -21,9 +21,8 @@ public class DataModel implements Serializable {
     public String phoneVerification="Not Verified";
     public String addresshome="cmeifvnievneivmeivumomeocmeocmefvevoueve";
     public String addresswork="mcejcwjxmwomweociw,ocipwmcowimcowmcwoicw";
-    public List<CompModel> complaint= null;
-    public List<TimeModel> timeline=null;
-
+    public List<CompModel> complaint= new ArrayList<CompModel>();
+    public List<TimeModel> timeline=new ArrayList<TimeModel>();
     public String getUsername() {
         return username;
     }

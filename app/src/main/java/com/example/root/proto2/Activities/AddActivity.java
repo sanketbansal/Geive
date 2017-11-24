@@ -15,6 +15,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -43,6 +44,7 @@ import com.example.root.proto2.AppMaps;
 import com.example.root.proto2.Apputil;
 import com.example.root.proto2.Cachedocument;
 import com.example.root.proto2.Fragments.CompActivity;
+import com.example.root.proto2.Fragments.DatePickerFrag;
 import com.example.root.proto2.Fragments.EMAILActivity;
 import com.example.root.proto2.Fragments.MapsActivity;
 import com.example.root.proto2.Models.CompModel;
@@ -129,9 +131,7 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
             public void onClick(View view) {
                 //DatePickerDialog datepicker=new DatePickerDialog(getApplicationContext());
                 //datepicker.show();
-                DatePicker datePicker=new DatePicker(getApplicationContext());
-                datePicker.setEnabled(true);
-                //datePicker.getMonth();
+                showDatePicker(view);
             }
 
         });
@@ -177,6 +177,11 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
                 startActivity(dashintent);
             }
         });
+    }
+
+    private void showDatePicker(View v){
+        DialogFragment datepick=new DatePickerFrag();
+        datepick.show(getSupportFragmentManager(),"DatePick");
     }
 
     @Override

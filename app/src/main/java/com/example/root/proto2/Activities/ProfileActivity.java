@@ -1,13 +1,16 @@
 package com.example.root.proto2.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
@@ -26,6 +29,7 @@ import com.example.root.proto2.AppFireStore;
 import com.example.root.proto2.Apploader;
 import com.example.root.proto2.Apputil;
 import com.example.root.proto2.Cachedocument;
+import com.example.root.proto2.Fragments.DatePickerFrag;
 import com.example.root.proto2.Models.DataModel;
 import com.example.root.proto2.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,6 +50,8 @@ import static com.example.root.proto2.Apputil.mAuth;
 public class ProfileActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<DataModel>{
 
 
+    private DataModel dm;
+
     private Apputil util;
     private Cachedocument cache;
     private AppFireStore fs;
@@ -63,6 +69,7 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     private AlertDialog OTPdialog;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    private int servicelock=0;
 
 
     @Override
@@ -72,12 +79,15 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         util=new Apputil();
         util.googleInit(ProfileActivity.this);
         util.firebaseInit();
 
         cache=new Cachedocument();
         cache.ctx=getApplicationContext();
+        dm=cache.readDoc("session");
+        dm=cache.readDoc(dm.userid);
 
         fs=new AppFireStore();
 
@@ -127,6 +137,16 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
                 if(verify.getText()!="Verified") {
                     verifynumber();
                 }
+                util.serviceintent.putExtra("docid",dm.userid);
+                util.serviceintent.putExtra("datamodel",dm);
+                util.serviceintent.putExtra("fieldid","");
+                util.serviceintent.putExtra("updatemodel",dm);
+                bindService(util.serviceintent,util.ipcConnection, Context.BIND_AUTO_CREATE);
+                servicelock=1;
+                //fs.dm=dm;
+                //fs.setDoc(fs.cRef.document(dm.userid));
+
+                util.msg= Message.obtain(null,1,0,0);
             }
         });
 
@@ -155,6 +175,15 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
         getSupportLoaderManager().initLoader(3,null,this);
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(servicelock==1){
+            servicelock=0;
+            unbindService(util.ipcConnection);
+        }
+    }
 
     @Override
     public Loader<DataModel> onCreateLoader(int id, Bundle args) {
@@ -228,8 +257,6 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
                     public void onCodeSent(String verificationId,
                                            PhoneAuthProvider.ForceResendingToken token) {
                         // The SMS verification code has been sent to the provided phone number, we
-                        // now need to ask the user to enter the code and then construct a credential
-                        // by combining the code with a verification ID.
                         Log.d("verification", "onCodeSent:" + verificationId);
 
                         AlertDialog.Builder OTPbuilder=new AlertDialog.Builder(new ContextThemeWrapper(ProfileActivity.this,R.style.OTPdialog));
@@ -282,8 +309,6 @@ public class ProfileActivity extends AppCompatActivity implements LoaderManager.
     private void disableEditText(EditText editText) {
         editText.setEnabled(false);
         editText.setCursorVisible(false);
-        //editText.setKeyListener(null);
-        //editText.setBackgroundColor(Color.TRANSPARENT);
     }
 
     private void enableEditText(EditText editText) {

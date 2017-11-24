@@ -280,8 +280,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:src="@drawable/ic_date"
-                android:contentDescription="Time"/>
+                android:src="@drawable/ic_date" />
 
             <TextView
                 android:id="@+id/date"

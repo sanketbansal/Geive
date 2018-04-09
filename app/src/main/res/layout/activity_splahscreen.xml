@@ -11,18 +11,19 @@
          TextureView, etc. -->
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@drawable/ic_government" />
+        android:background="@drawable/ic_government"
+        android:contentDescription="logo"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="40dp"
         android:textSize="32dp"
         android:textStyle="italic"
         android:text="Gieve"/>

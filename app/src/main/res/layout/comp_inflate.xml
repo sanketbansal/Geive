@@ -10,23 +10,35 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center|start"
         android:layout_margin="5dp"
-        card_view:cardCornerRadius="4dp">
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/person_name"
+                android:id="@+id/category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
                 android:layout_margin="@dimen/text_margin" />
 
             <TextView
-                android:id="@+id/person_age"
+                android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/person_name"
+                android:layout_margin="@dimen/text_margin"
+                android:layout_below="@+id/category"
+                android:ellipsize="marquee"
+                android:textColor="@color/black"
+                android:lines="2"/>
+
+            <TextView
+                android:id="@+id/city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/description"
                 android:layout_margin="@dimen/text_margin" />
 
             <CheckBox

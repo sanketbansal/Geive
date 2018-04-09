@@ -24,8 +24,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.jdeferred.Deferred;
+import org.jdeferred.Promise;
+import org.jdeferred.impl.DeferredObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -40,18 +46,20 @@ public class AppFireStore {
     public CollectionReference cRef = db.collection("Mobile").document("Grieveance").collection("Users");
     public DataModel dm;
     public PhoneModel pm;
-    public CompModel cm;
-    public TimeModel tm;
-    public String docs;
+    public List<CompModel> cm=new ArrayList<CompModel>();
+    public List<CompModel> tm=new ArrayList<CompModel>();
 
+    private Deferred deferred = new DeferredObject();
+    public Promise promise = deferred.promise();
 
+    public int docs;
+    public Boolean dataflag=false;
     private FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
             .setPersistenceEnabled(true)
             .build();
 
     public void AppFireStore(){
         db.setFirestoreSettings(settings);
-
     }
 
     public void setDoc(DocumentReference docRef){
@@ -69,6 +77,21 @@ public class AppFireStore {
                     Log.i("firestore", "Error writing document", e);
                 }
             });
+    }
+
+    public void addDoc(){
+        for(CompModel comp:dm.getComplaint()) {
+            cRef.add(comp).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentReference> task) {
+                    if (task.isSuccessful()) {
+                        Log.i("firestore", "Timeline successfully written!" + dm.userid);
+                    } else {
+                        Log.i("firestore", "Error writing Document Timeline");
+                    }
+                }
+            });
+        }
     }
 
 
@@ -96,6 +119,7 @@ public class AppFireStore {
         cRef.document("/" + id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                dataflag=true;
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
@@ -115,8 +139,8 @@ public class AppFireStore {
     }
 
 
-    public void queryDocs(CollectionReference coRef,String querykey,String queryvalue) {
-        coRef.whereEqualTo(querykey,queryvalue)
+    public void queryDocs(String querykey,String queryvalue) {
+        cRef.whereEqualTo(querykey,queryvalue)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -125,14 +149,43 @@ public class AppFireStore {
                             if(task.getResult()!=null) {
                                 for (DocumentSnapshot document : task.getResult()) {
                                     Log.d("firestore", document.getId() + " => " + document.getData());
-                                    //docs.put(document.getId(), document.toObject(DataModel.class));
-                                    docs=document.getId();
+                                    if(dm!=null) {
+                                        if (dm.userid.equals(document.getId())) {
+                                            docs = 1;
+                                        } else {
+                                            docs = -1;
+                                        }
+                                    }
+                                    else{
+                                        dm=document.toObject(DataModel.class);
+                                    }
                                 }
                             }
                            else{
-                                docs=null;
+                                docs=0;
                             }
+                            deferred.resolve("Resolved");
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            deferred.reject("REJECTED");
+                        }
+                    }
+                });
+    }
 
+    public void queryTimeDocs(String querykey,String queryvalue) {
+        cRef.whereEqualTo(querykey,queryvalue)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if(task.getResult()!=null) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    Log.d("firestore", document.getId() + " => " + document.getData());
+                                    tm.add(document.toObject(CompModel.class));
+                                }
+                            }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }

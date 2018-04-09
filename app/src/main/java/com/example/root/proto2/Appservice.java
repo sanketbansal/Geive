@@ -223,7 +223,13 @@ public class Appservice extends Service {
                  Log.i("appservices","handlemessage casse 3"+docid+fieldid);
                 fs.deletefield(fs.cRef.document("/"+docid),fieldid);
                 break;
-            default:
+
+            case 4:
+                Toast.makeText(getApplicationContext(), "hello! 4", Toast.LENGTH_SHORT).show();
+                Log.i("appservices","handlemessage casse 4"+docid);
+                fs.dm = datamodel;
+                fs.cRef=fs.db.collection("Mobile").document("Grieveance").collection("Timeline");
+                fs.addDoc();
                 break;
         }
     }

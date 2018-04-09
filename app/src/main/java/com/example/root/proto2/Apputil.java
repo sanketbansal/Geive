@@ -112,7 +112,7 @@ public class Apputil implements GoogleApiClient.ConnectionCallbacks, GoogleApiCl
 
 
     public void ipc_util(Context ctx){
-
+        final Context ctx1=ctx;
         serviceintent=new Intent(ctx,Appservice.class);
         ipcConnection=new ServiceConnection(){
             public void onServiceConnected(ComponentName className, IBinder service) {
@@ -123,6 +123,15 @@ public class Apputil implements GoogleApiClient.ConnectionCallbacks, GoogleApiCl
                 // representation of that from the raw IBinder object.
                 ipcMessenger = new Messenger(service);
                 ipcBound = true;
+                Toast.makeText(ctx1,"IPC handler connected",Toast.LENGTH_SHORT).show();
+                try {
+                    if(msg!=null) {
+                        ipcMessenger.send(msg);
+                    }
+                } catch (Exception e) {
+                    Log.i("appservice", e.toString());
+                    Toast.makeText(ctx1,"Failed Try Again!",Toast.LENGTH_SHORT).show();
+                }
             }
 
             public void onServiceDisconnected(ComponentName className) {

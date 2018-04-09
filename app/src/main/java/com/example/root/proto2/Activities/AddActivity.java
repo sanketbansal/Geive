@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -35,6 +36,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,17 +85,26 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
     String mPermission = android.Manifest.permission.ACCESS_FINE_LOCATION;
 
     private TextView dateview;
+    private TextClock timeview;
     private ImageView photoview;
+    private EditText place;
     private EditText street_edit;
+    private EditText category;
+    private EditText description;
     private ImageButton street_location;
     private MapView addressview;
     private ImageButton send;
     private ImageButton close;
+    private FloatingActionButton save;
+    private CompModel comp =new CompModel();
 
     private DataModel dm;
+    private Address address;
+
     private int servicelock=0;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +112,7 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
 
         cache=new Cachedocument();
         util=new Apputil();
-        util.ipc_util(getApplicationContext());
+
 
         dm=new DataModel();
         cache.ctx=getApplicationContext();
@@ -135,6 +146,7 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
             }
 
         });
+        timeview=(TextClock)findViewById(R.id.text_clock);
 
         photoview =(ImageView) findViewById(R.id.photo_view);
         photoview.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +173,7 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
 
         send=(ImageButton) findViewById(R.id.send);
         close=(ImageButton) findViewById(R.id.close);
-
+        save=(FloatingActionButton) findViewById(R.id.save);
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,8 +189,22 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
                 startActivity(dashintent);
             }
         });
+
+        save.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                savedata();
+            }
+        });
+
+        place =(EditText) findViewById(R.id.place_edit);
+        category=(EditText) findViewById(R.id.category_edit);
+        description=(EditText) findViewById(R.id.description_edit);
     }
 
+    /**
+     * @param v
+     */
     private void showDatePicker(View v){
         DialogFragment datepick=new DatePickerFrag();
         datepick.show(getSupportFragmentManager(),"DatePick");
@@ -212,7 +238,6 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
                     Log.i("Locpermission","permission granted");
                     addressmap.mMap.setMyLocationEnabled(true);
                 }
-
             } else {
                 // Permission was denied. Display an error message.
                 Log.i("Locpermission","PERMISSION DENIED");
@@ -238,36 +263,13 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
     public void onConnected(Bundle connectionHint) {
         Location loc=location.getLastLocation();
         if(loc!=null) {
-            Address address = location.getLocationAddress(loc);
+            address = location.getLocationAddress(loc);
             street_edit.setText(address.getAddressLine(0));
             street_location.setVisibility(View.INVISIBLE);
-
-            CompModel comp =new CompModel();
-            comp.setLandmark(address.getAddressLine(0));
-            comp.setCity(address.getAdminArea());
-            Log.i("Addactivity",comp.getCity());
-
-            dm.getComplaint().set(0, comp);
-            dm.setComplaint(dm.getComplaint());
-            cache.writeDoc(dm,dm.userid);
-
-            util.serviceintent.putExtra("docid",dm.userid);
-            util.serviceintent.putExtra("datamodel",dm);
-            util.serviceintent.putExtra("fieldid","");
-            util.serviceintent.putExtra("updatemodel",dm);
-            bindService(util.serviceintent,util.ipcConnection, Context.BIND_AUTO_CREATE);
-            servicelock=1;
-            //fs.dm=dm;
-            //fs.setDoc(fs.cRef.document(dm.userid));
-
-            util.msg= Message.obtain(null,1,0,0);
-
-
             AppMaps.location = loc;
             addressmap = new AppMaps(addressview, getApplicationContext(), AddActivity.this);
             mGoogleLocationClient.disconnect();
         }
-
         else{
             mGoogleLocationClient.connect();
         }
@@ -289,8 +291,12 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
     }
 
 
+    /**
+     *
+     */
     protected void sendEmail() {
         Log.i("Send email", "");
+        savedata();
         String[] TO = {"sanketbansal57@gmail.com"};
         String[] CC = {""};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -372,6 +378,47 @@ public class AddActivity extends AppCompatActivity implements GoogleApiClient.On
                     return "SECTION 3";
             }
             return "Section";
+        }
+    }
+
+    private void savedata(){
+        if(address!=null) {
+            comp.setLandmark(address.getAddressLine(0));
+            comp.setState(address.getAdminArea());
+            comp.setDate(dateview.getText().toString());
+            comp.setTime(timeview.getFormat12Hour().toString());
+            comp.setPlace(place.getText().toString());
+            comp.setCategory(category.getText().toString());
+            comp.setDescription(description.getText().toString());
+            comp.setCity(address.getSubAdminArea());
+            Log.i("Addactivity",comp.getCity());
+
+            dm.getComplaint().add(comp);
+            dm.setComplaint(dm.getComplaint());
+
+            cache.writeDoc(dm,dm.userid);
+
+            util.ipc_util(getApplicationContext());
+
+            util.serviceintent.putExtra("docid",dm.userid);
+            util.serviceintent.putExtra("datamodel",dm);
+            util.serviceintent.putExtra("fieldid","");
+            util.serviceintent.putExtra("updatemodel",dm);
+            bindService(util.serviceintent,util.ipcConnection, Context.BIND_AUTO_CREATE);
+            servicelock=1;
+            util.msg= Message.obtain(null,1,0,0);
+            //util.msg=Message.obtain(null,4,0,0);
+            //Thread th=new Thread();
+         /*try {
+            util.ipcMessenger.send(util.msg);
+        } catch (Exception e) {
+            Log.i("appservice", e.toString());
+            Toast.makeText(this,"Failed Try Again!",Toast.LENGTH_SHORT).show();
+        }*/
+        }
+
+        else{
+            Toast.makeText(this,"Fill Required Details Completely",Toast.LENGTH_LONG).show();
         }
     }
 }

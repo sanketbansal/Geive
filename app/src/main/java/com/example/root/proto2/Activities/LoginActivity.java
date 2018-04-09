@@ -72,6 +72,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.jdeferred.DoneCallback;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -108,9 +110,11 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
         util.firebaseInit();
         util.ipc_util(this);
 
-        fs=new AppFireStore();
-
         dataModel=new DataModel();
+
+        fs=new AppFireStore();
+        //fs.dm=
+
 
         cache=new Cachedocument();
         cache.ctx=getApplicationContext();
@@ -136,13 +140,29 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
             }
         });
 
+        final EditText phoneno=(EditText) findViewById(R.id.phoneno);
+
         Button signin =(Button) findViewById(R.id.signin);
-        signin.setOnClickListener(new OnClickListener() {
+        signin.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View view) {
-                startActivity(navintent);
-                finish();
-                Toast.makeText(LoginActivity.this,"Sign in button clicked",Toast.LENGTH_LONG).show();
+                fs.queryDocs("phone",phoneno.getText().toString());
+                fs.promise.done(new DoneCallback() {
+                    @Override
+                    public void onDone(Object result) {
+                        Log.i("promises",result.toString());
+                        if(fs.dm!=null) {
+                            cache.writeDoc(fs.dm, "session");
+                            dataModel=fs.dm;
+                            startActivity(navintent);
+                            finish();
+                            Toast.makeText(LoginActivity.this,"Signing in"+ dataModel.username,Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            Toast.makeText(LoginActivity.this,"Sign in failed user not found \n Try sign in With Google",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
     }
@@ -191,7 +211,6 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
             dataModel.setUsername(acct.getDisplayName());
             //dataModel.setComplaint(cache.readDoc("dummy").getComplaint());
             //dataModel.setTimeline(cache.readDoc("dummy").getTimeline());
-            cache.ctx=getApplicationContext();
             cache.writeDoc(dataModel,"session");
 
             util.serviceintent.putExtra("docid",acct.getEmail());
@@ -207,15 +226,15 @@ public  class LoginActivity extends AppCompatActivity implements GoogleApiClient
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
+                                String docs=null;
                                 if (task.getResult() != null) {
                                     for (DocumentSnapshot document : task.getResult()) {
                                         Log.d("firestore", document.getId() + " => " + document.getData());
-                                        fs.docs = document.getId();
+                                        docs = document.getId();
                                     }
-                                } else {
-                                    fs.docs = null;
                                 }
-                                if (fs.docs == null){
+
+                                if (docs == null){
                                     util.msg=Message.obtain(null,1,0,0);
                                     try {
                                         util.ipcMessenger.send(util.msg);

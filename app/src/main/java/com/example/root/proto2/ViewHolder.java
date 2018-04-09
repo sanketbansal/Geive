@@ -27,13 +27,15 @@ public class ViewHolder extends RecyclerView.ViewHolder{
 
     public void CompHolder(CompModel compmodel){
         cv = (CardView) itemView.findViewById(R.id.card_view);
-        TextView personName = (TextView)itemView.findViewById(R.id.person_name);
-        TextView personAge = (TextView)itemView.findViewById(R.id.person_age);
-        personName.setText(compmodel.getState());
-        personAge.setText(compmodel.getCity());
+        TextView category = (TextView)itemView.findViewById(R.id.category);
+        TextView description = (TextView)itemView.findViewById(R.id.description);
+        TextView city = (TextView)itemView.findViewById(R.id.city);
+        category.setText(compmodel.getCategory());
+        description.setText(compmodel.getDescription());
+        city.setText(compmodel.getCity());
     }
 
-    public void DashHolder(TimeModel timemodel) {
+    public void DashHolder(CompModel timemodel) {
         cv = (CardView)itemView.findViewById(R.id.card_view);
         TextView personName = (TextView)itemView.findViewById(R.id.person_name);
         TextView personAge = (TextView)itemView.findViewById(R.id.person_age);

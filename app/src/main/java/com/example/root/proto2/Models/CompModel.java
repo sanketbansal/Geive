@@ -10,8 +10,6 @@ public class CompModel implements Serializable {
 
     private String place="lonawala";
     private String description="ndwirnviernvenmweuivnwmuivnwrivbninvwirnvwi";
-    private Double lat=8.9;
-    private  Double lng=-7.6;
     private String date="28 nov 2017";
     private String time="10:00 pm";
     private String state="Maharashtra";
@@ -19,21 +17,6 @@ public class CompModel implements Serializable {
     private String landmark="dhdyjhfh";
     private String category="maintenance";
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public Double getLat() {
-        return lat;
-    }
-
-    public Double getLng() {
-        return lng;
-    }
 
     public String getPlace() {
         return place;
@@ -43,61 +26,59 @@ public class CompModel implements Serializable {
         this.place = place;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDate() {
         return date;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     public String getTime() {
         return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getState() {
         return state;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public String getLandmark() {
-        return landmark;
-    }
-
-
-
-    public void setLat(Double lat) {
-        this.lat = lat;
-    }
-
-    public void setLng(Double lng) {
-        this.lng = lng;
-    }
-
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     public void setCity(String city) {
         this.city = city;
     }
 
+    public String getLandmark() {
+        return landmark;
+    }
+
     public void setLandmark(String landmark) {
         this.landmark = landmark;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

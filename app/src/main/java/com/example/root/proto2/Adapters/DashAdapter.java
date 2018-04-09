@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.root.proto2.Models.CompModel;
 import com.example.root.proto2.Models.DataModel;
 import com.example.root.proto2.Models.TimeModel;
 import com.example.root.proto2.R;
@@ -18,10 +19,10 @@ import java.util.List;
 
 public class DashAdapter extends RecyclerView.Adapter<ViewHolder> {
 
-    private List<TimeModel> mtimemodel;
+    private List<CompModel> mtimemodel;
     private View mview;
 
-    public DashAdapter(List<TimeModel> myDatamodel) {
+    public DashAdapter(List<CompModel> myDatamodel) {
         mtimemodel = myDatamodel;
     }
 

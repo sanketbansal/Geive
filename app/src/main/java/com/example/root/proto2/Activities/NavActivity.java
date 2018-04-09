@@ -21,15 +21,19 @@ import android.widget.Toast;
 
 import com.example.root.proto2.Adapters.DashAdapter;
 import com.example.root.proto2.Adapters.ViewAdapter;
+import com.example.root.proto2.AppFireStore;
 import com.example.root.proto2.Apploader;
 import com.example.root.proto2.Apputil;
 import com.example.root.proto2.Cachedocument;
 import com.example.root.proto2.Models.DataModel;
+import com.example.root.proto2.Models.TimeModel;
 import com.example.root.proto2.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.taplytics.sdk.Taplytics;
+
+import static com.example.root.proto2.Activities.SplahscreenActivity.address;
 
 
 public class NavActivity extends AppCompatActivity
@@ -41,7 +45,10 @@ public class NavActivity extends AppCompatActivity
     private RecyclerView.LayoutManager mlinearlayout;
     private RecyclerView.Adapter madapter;
 
+    private AppFireStore fs;
     private Cachedocument cache;
+
+    private DataModel dm;
 
 
     @Override
@@ -56,6 +63,16 @@ public class NavActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         util=new Apputil();
         util.googleInit(NavActivity.this);
+
+        cache=new Cachedocument();
+        cache.ctx=getApplicationContext();
+
+        dm=new DataModel();
+        dm=cache.readDoc("session");
+        dm=cache.readDoc(dm.userid);
+
+        fs=new AppFireStore();
+        fs.dm=dm;
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -83,9 +100,23 @@ public class NavActivity extends AppCompatActivity
         mrecyclerview.setHasFixedSize(true);
         mrecyclerview.setLayoutManager(mlinearlayout);
 
+        loaddata();
         getSupportLoaderManager().initLoader(2,null,this);
     }
 
+    void loaddata(){
+
+        if(address!=null) {
+            fs.cRef = fs.db.collection("Mobile").document("Grieveance").collection("Timeline");
+            fs.queryTimeDocs("state", address.getAdminArea());
+
+            madapter = new DashAdapter(fs.tm);
+            mrecyclerview.setAdapter(madapter);
+        }
+        else{
+            Toast.makeText(this,"To get Regular Location updates turn on location",Toast.LENGTH_LONG).show();
+        }
+    }
 
     @Override
     public Loader<DataModel> onCreateLoader(int id, Bundle args) {
@@ -94,21 +125,12 @@ public class NavActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<DataModel> loader, DataModel data) {
-
-        if(data!=null) {
-            //Log.i("scroll", data.userid);
-            madapter = new DashAdapter(data.getTimeline());
-            mrecyclerview.setAdapter(madapter);
-        }
+        loaddata();
     }
 
     @Override
     public void onLoaderReset(Loader<DataModel> loader) {
-        madapter = new DashAdapter(null);
-        mrecyclerview.setAdapter(madapter);
     }
-
-
 
 
     @Override

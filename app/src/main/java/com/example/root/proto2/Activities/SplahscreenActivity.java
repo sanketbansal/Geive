@@ -3,6 +3,10 @@ package com.example.root.proto2.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.location.Address;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
@@ -12,6 +16,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.root.proto2.AppFireStore;
@@ -88,6 +93,7 @@ public class SplahscreenActivity extends AppCompatActivity implements GoogleApiC
 
     private Apputil util;
     private AppLocation location;
+    static Address address;
     private AppFireStore fs=new AppFireStore();
     private Cachedocument cache=new Cachedocument();
 
@@ -101,18 +107,19 @@ public class SplahscreenActivity extends AppCompatActivity implements GoogleApiC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splahscreen);
+
+
         Taplytics.startTaplytics(this, "e2f8b7a91063c9296ab6e3b1698c16319c96d1bd");
-        DummyData dummy =new DummyData();
+        /*DummyData dummy =new DummyData();
         cache.ctx=getApplicationContext();
-        cache.writeDoc(dummy.setdata(),"dummy");
+        cache.writeDoc(dummy.setdata(),"dummy");*/
         mVisible = true;
-        //mControlsView = findViewById(R.id.fullscreen_content_controls);
+
         navintent=new Intent(SplahscreenActivity.this, NavActivity.class);
         loginintent=new Intent(SplahscreenActivity.this, LoginActivity.class);
         location=new AppLocation(SplahscreenActivity.this);
         util=new Apputil();
         util.googleInit(SplahscreenActivity.this);
-        //util.LocationInit(SplahscreenActivity.this);
 
         mGoogleLocationClient=new GoogleApiClient.Builder(SplahscreenActivity.this)
                 .addOnConnectionFailedListener(SplahscreenActivity.this)
@@ -148,7 +155,7 @@ public class SplahscreenActivity extends AppCompatActivity implements GoogleApiC
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        location.getLocationAddress(location.getLastLocation());
+        address=location.getLocationAddress(location.getLastLocation());
         location.requestLocationUpdate();
         //mGoogleLocationClient.disconnect();
     }

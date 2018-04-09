@@ -15,28 +15,19 @@ public class DataModel implements Serializable {
     public String username="Sanket bansal";
     public String userid="sankybansal59@yahoo.in";
     public int age=22;
-    public Double lat=0.0;
-    public  Double lng=5.6;
-    public String phone="3etw4sd56u7v8yi7gv56uyi7uli7g";
+    public String phone="Phone no";
     public String phoneVerification="Not Verified";
     public String addresshome="cmeifvnievneivmeivumomeocmeocmefvevoueve";
     public String addresswork="mcejcwjxmwomweociw,ocipwmcowimcowmcwoicw";
     public List<CompModel> complaint= new ArrayList<CompModel>();
     public List<TimeModel> timeline=new ArrayList<TimeModel>();
+
     public String getUsername() {
         return username;
     }
 
     public String getUserid() {
         return userid;
-    }
-
-    public Double getLat() {
-        return lat;
-    }
-
-    public Double getLng() {
-        return lng;
     }
 
     public String getPhone() {
@@ -59,7 +50,7 @@ public class DataModel implements Serializable {
         return addresswork;
     }
 
-    public void setAddress_home(String address_home) {
+    public void setaddresshome(String address_home) {
         addresshome = address_home;
     }
 
@@ -73,14 +64,6 @@ public class DataModel implements Serializable {
 
     public void setUserid(String userid) {
         this.userid = userid;
-    }
-
-    public void setLat(Double lat) {
-        this.lat = lat;
-    }
-
-    public void setLng(Double lng) {
-        this.lng = lng;
     }
 
     public void setPhone(String phone) {
@@ -108,8 +91,6 @@ public class DataModel implements Serializable {
     }
 
     public int getAge() {
-
-
         return age;
     }
 

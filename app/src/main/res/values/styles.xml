@@ -62,5 +62,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.AddTheme.Light.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar" />
+
 
 </resources>
